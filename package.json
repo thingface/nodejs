@@ -1,0 +1,21 @@
+{
+  "name": "thingface",
+  "version": "0.0.1",
+  "description": "A library for connecting to thingface server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "thingface",
+    "mqtt",
+    "nodejs",
+    "iot",
+    "internet-of-things"
+  ],
+  "author": "Miroslav Božík",
+  "license": "ISC",
+  "dependencies": {
+    "mqtt": "^2.4.0"
+  }
+}
