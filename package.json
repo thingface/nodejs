@@ -14,7 +14,7 @@
     "internet-of-things"
   ],
   "author": "Miroslav Božík",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "mqtt": "^2.4.0"
   }

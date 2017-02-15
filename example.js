@@ -16,7 +16,7 @@ thingface.onConnectionState(function(newState){
     }
 });
 
-thingface.connect("testdevice", "D4t6bAzBmOQuHf6Oa2GTSMmqtpjhrD", "dev-app.thingface.io");
+thingface.connect("mydevice", "secret-key", "my-app.thingface.io");
 
 thingface.onCommand(function(sender, commandName, commandArgs){
     console.log("received command from "+sender);

@@ -1,5 +1,5 @@
-# NPM package for thingface platform
-The thingface client library for NodeJS
+# The thingface client library for NodeJS
+NPM Package for Thingface Platform
 
 ## Installation
 
@@ -32,30 +32,31 @@ thingface.connect('mydevice', 'mydevicesecret', 'my-app.thingface.io');
 ```
 
 ## API Reference
-Have a look to simple api.
+API is very simple. Have a look to api reference.
+
 
 ### thingface.connect(deviceId, deviceSecretKey, host)
 connect to the thingface device gateway specified by the given host name with current device ID and device secret key.
-- **deviceId** - device ID
-- **deviceSecretKey** - secret key for that device
-- **host** - device gateway hostname
+- `deviceId` - device ID
+- `deviceSecretKey` - secret key for that device
+- `host` - device gateway hostname
 
 ### thingface.disconnect()
 disconnect from thingface device gateway
 
 ### thingface.isConnected()
-returns *true* if this client is connected, otherwise it returns *false*
+returns *true* if this client is connected, otherwise it returns *false*. Use it everytime when you need to check if device is connected or not.
 
 ### thingface.onConnectionState(eventHandlerFn)
 connection state event handling
-- **eventHandlerFn** - a function to handle connection state event
+- `eventHandlerFn` - a function to handle connection state event
 
 ### thingface.onCommand(commandHandler[, sender])
 subscribe for commands from sender
-- **commandHandler** - a function to handle commands
-- **sender (optional)** - sender id (username or device ID), if sender is not provided device will receive commands from every user or device
+- `commandHandler` - a function to handle commands
+- `sender` (optional) - sender id (username or device ID), if sender is not provided device will receive commands from every user or device
 
 ### thingface.sendSensorValue(sensorId, sensorValue)
 send sensor value to thingface gateway
-- sensorId - sensor ID from the device
-- sensorValue - current sensor value (double)
+- `sensorId` - sensor ID from the device
+- `sensorValue` - current sensor value (as double type)
