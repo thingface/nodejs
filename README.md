@@ -60,3 +60,7 @@ subscribe for commands from sender
 send sensor value to thingface gateway
 - `sensorId` - sensor ID from the device
 - `sensorValue` - current sensor value (as double type)
+
+## More Information
+- [https://github.com/thingface](https://github.com/thingface)
+- [http://thingface.io](http://thingface.io/)
