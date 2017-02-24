@@ -14,7 +14,7 @@ A few lines of code and you're ready to control or monitor your device.
 ```js
 var thingface = require('thingface');
 
-function commandHandler(sender, commandName, commandArgs){
+function commandHandler(senderType, senderId, commandName, commandArgs){
     if(commandName === "say"){
         console.log(commandArgs[0]);
     }
@@ -34,7 +34,6 @@ thingface.connect('mydevice', 'mydevicesecret', 'my-app.thingface.io');
 ## API Reference
 API is very simple. Have a look to api reference.
 
-
 ### thingface.connect(deviceId, deviceSecretKey, host)
 connect to the thingface device gateway specified by the given host name with current device ID and device secret key.
 - `deviceId` - device ID
@@ -51,10 +50,11 @@ returns *true* if this client is connected, otherwise it returns *false*. Use it
 connection state event handling
 - `eventHandlerFn` - a function to handle connection state event
 
-### thingface.onCommand(commandHandler[, sender])
+### thingface.onCommand(commandHandler[, senderType][, senderId])
 subscribe for commands from sender
 - `commandHandler` - a function to handle commands
-- `sender` (optional) - sender id (username or device ID), if sender is not provided device will receive commands from every user or device
+- `senderType` (optional) - sender type ('u' - user command, 'd' - device command), if sender type is not provided device will receive commands from every user or device
+- `senderId` (optional) - sender ID (username or device ID), if sender ID is not provided device will receive commands from every user or device
 
 ### thingface.sendSensorValue(sensorId, sensorValue)
 send sensor value to thingface gateway

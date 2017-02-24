@@ -29,13 +29,14 @@ function _disconnectHandler(){
 
 function _messageHandler(topic, message){
     "use strict";
-    if (/^tf\/c/.test(topic)) {
+    if (/^[du]{1}\/c/.test(topic)) {
         // message is command
         var payload = utils.bufferToJson(message);
-        var match = /tf\/c\/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)/.exec(topic);
-        var sender = match[1];
+        var match = /([du]{1})\/c\/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)/.exec(topic);
+        var senderType = match[1];
+        var senderId = match[2];
         if (_onCommandCallback) {
-            _onCommandCallback(sender, payload.c, payload.a);
+            _onCommandCallback(senderType, senderId, payload.c, payload.a);
         }
     }
 }
@@ -56,18 +57,26 @@ function connect(deviceId, secretKey, host, port){
     if (!deviceId) {
         throw new Exception("A device ID is required.");
     }
+
+    if(typeof deviceId !== "string"){
+        throw new Exception("A device ID must be a string.");
+    }
     _deviceId = deviceId;
 
     if (!secretKey) {
         throw new Exception("A secret key is required.");
     }
+
+    if(typeof secretKey !== "string"){
+        throw new Exception("A device secret key must be a string.");
+    }
     _secretKey = secretKey;
 
-    if (host) {
+    if(host && typeof host === "string"){
         _host = host;
     }
 
-    if(port && port > 0){
+    if(port && typeof port === "number" && port > 0 && port < 65535){
         _port = port;
     }
 
@@ -80,7 +89,7 @@ function connect(deviceId, secretKey, host, port){
         rejectUnauthorized: false
     };
 
-    console.log(`connecting to ${_host} at port ${_port}`);
+    //console.log(`connecting to ${_host} at port ${_port}`);
 
     _client  = mqtt.connect('mqtts://'+_host, options);
     _client.on('error', _onErrorHandler);
@@ -111,44 +120,71 @@ function isConnected(){
 function sendSensorValue(sensorId, sensorValue) {
     "use strict";
 
-    if (!_client) {
-        return;
+    if(!_client){
+        throw new Error("client is disconnected");
+    }
+
+    if (typeof sensorId !== "string") {
+        throw new Error("sensor ID must be a string");
+    }
+
+    if (sensorId.length > 25) {
+        throw new Error("sensor ID is too long");
+    }
+
+    if (typeof sensorValue !== "number") {
+        throw new Error("sensor value must be a number");
     }
 
     var message = utils.jsonToBuffer({v:sensorValue});
-    // topic tf/d/{deviceId}/{sensorId}
-    _client.publish("tf/d/" + _deviceId + "/" + sensorId, message);
+    _client.publish("d/d/" + _deviceId + "/" + sensorId, message);
 }
 
-function onCommand(callback, sender) {
+function onCommand(callback, senderType, senderId) {
     "use strict";
 
     if (!callback) {
-        throw new Error("Command callback is required");
+        throw new Error("command callback is required");
+    }
+
+    if (typeof callback !== "function") {
+        throw new Error("callback must be a function");
     }
 
     if(!_client){
         throw new Error("Client is disconnected");
     }
 
-    if (sender) {
-        _client.subscribe('tf/c/' + sender + '/' + _deviceId);
-    } else {
-        _client.subscribe('tf/c/+/' + _deviceId);
+    var _senderType = "+";
+    var _senderId = "+";
+
+    if (typeof senderType === "string" && /^[ud]{1}/.test(senderType)) {
+        _senderType = senderType;
     }
+
+    if (typeof senderId === "string" && senderId.length <= 30) {
+        _senderId = senderId;
+    }
+
+    var topicFilter = _senderType + '/c/' + _senderId + '/' + _deviceId;
+    _client.subscribe(topicFilter);
     _onCommandCallback = callback;
 }
 
 function onError(callback){
     "use strict";
+    if (typeof callback !== "function") {
+        throw new Error("callback must be a function");
+    }
     _onErrorUserCallback = callback;
 }
 
 function onConnectionState(callback){
     "use strict";
-    if(callback){
-        _onConnectionStateCallback = callback;
+    if (typeof callback !== "function") {
+        throw new Error("callback must be a function");
     }
+    _onConnectionStateCallback = callback;
 }
 
 module.exports = {
