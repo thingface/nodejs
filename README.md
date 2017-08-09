@@ -27,18 +27,20 @@ thingface.onConnectionState(function(newState){
     }
 })
 
-thingface.connect('mydevice', 'mydevicesecret', 'my-app.thingface.io');
+thingface.connect('mydeviceid', 'mydevicesecretkey');
 
 ```
 
 ## API Reference
 API is very simple. Have a look to api reference.
 
-### thingface.connect(deviceId, deviceSecretKey, host)
+### thingface.connect(deviceId, deviceSecretKey, host, port, enableSsl)
 connect to the thingface device gateway specified by the given host name with current device ID and device secret key.
 - `deviceId` - device ID
 - `deviceSecretKey` - secret key for that device
-- `host` - device gateway hostname
+- `host` (optional) - device gateway hostname (default **personal.thingface.io**)
+- `port` (optional) - device gateway port (default **8883** for SSL connection, **1883** for no SSL connection)
+- `enableSsl` (optional) - enable SSL connection (default **true**)
 
 ### thingface.disconnect()
 disconnect from thingface device gateway
@@ -63,4 +65,4 @@ send sensor value to thingface gateway
 
 ## More Information
 - [https://github.com/thingface](https://github.com/thingface)
-- [http://thingface.io](http://thingface.io/)
+- [https://thingface.io](https://thingface.io/)

@@ -15,7 +15,7 @@ thingface.onConnectionState(function(newState){
     // 1 - connected
     // 0 - disconnected
     var stateText = newState === 1 ? "connected" : "disconnected";
-    console.log("connection state changed to "+stateText);
+    console.log("device is "+stateText);
 
     if (newState === 1) {
         thingface.onCommand(commandHandler);
@@ -27,7 +27,9 @@ thingface.onConnectionState(function(newState){
     }
 });
 
-thingface.connect("mydevice", "secret-key", "my-app.thingface.io");
+thingface.connect("mydeviceid", "devicesecretkey");
+// for no SSL connection
+//thingface.connect("mydeviceid", "mydevicesecretkey", null /*will use default host (personal.thingface.io)*/, null /*will use default port (1883)*/, false);
 
 //thingface.sendSensorValue("s1", 0.11);
 //thingface.disconnect();

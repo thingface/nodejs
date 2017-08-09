@@ -4,7 +4,9 @@ var utils = require("./utils");
 var _deviceId;
 var _secretKey;
 var _host = "personal.thingface.io";
-var _port = 8883;
+var _port = 1883;
+var _sslPort = 8883;
+var _enableSsl = true;
 var _client;
 var _onErrorUserCallback;
 var _onConnectionStateCallback;
@@ -29,10 +31,10 @@ function _disconnectHandler(){
 
 function _messageHandler(topic, message){
     "use strict";
-    if (/^[du]{1}\/c/.test(topic)) {
+    if (/^[du]{1}\/([a-zA-Z0-9]{1,25})\/[c]{1}/.test(topic)) {
         // message is command
         var payload = utils.bufferToJson(message);
-        var match = /([du]{1})\/c\/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)/.exec(topic);
+        var match = /([du]{1})\/([a-zA-Z0-9]{1,25})\/[c]{1}\/([a-zA-Z0-9]{1,25})/.exec(topic);
         var senderType = match[1];
         var senderId = match[2];
         if (_onCommandCallback) {
@@ -51,7 +53,7 @@ function _onErrorHandler(error){
 //
 // Public Functions
 //
-function connect(deviceId, secretKey, host, port){
+function connect(deviceId, secretKey, host, port, enableSsl){
     "use strict";
 
     if (!deviceId) {
@@ -80,8 +82,12 @@ function connect(deviceId, secretKey, host, port){
         _port = port;
     }
 
+    if (typeof enableSsl === "boolean") {
+        _enableSsl = enableSsl;
+    }
+
     var options = {
-        port: _port,
+        port: _enableSsl ? _sslPort : _port,
         username: _deviceId,
         password: _secretKey,
         clientId: _deviceId,
@@ -89,9 +95,11 @@ function connect(deviceId, secretKey, host, port){
         rejectUnauthorized: false
     };
 
-    //console.log(`connecting to ${_host} at port ${_port}`);
-
-    _client  = mqtt.connect('mqtts://'+_host, options);
+    if (_enableSsl) {
+        _client  = mqtt.connect('mqtts://'+_host, options);
+    } else {
+        _client  = mqtt.connect('mqtt://'+_host, options);
+    }
     _client.on('error', _onErrorHandler);
     _client.on('connect', _connectHandler);
     _client.on('disconnect', _disconnectHandler);
@@ -137,7 +145,7 @@ function sendSensorValue(sensorId, sensorValue) {
     }
 
     var message = utils.jsonToBuffer({v:sensorValue});
-    _client.publish("d/d/" + _deviceId + "/" + sensorId, message);
+    _client.publish("d/" + _deviceId + "/s/" + sensorId, message);
 }
 
 function onCommand(callback, senderType, senderId) {
@@ -162,11 +170,11 @@ function onCommand(callback, senderType, senderId) {
         _senderType = senderType;
     }
 
-    if (typeof senderId === "string" && senderId.length <= 30) {
+    if (typeof senderId === "string" && senderId.length <= 25) {
         _senderId = senderId;
     }
 
-    var topicFilter = _senderType + '/c/' + _senderId + '/' + _deviceId;
+    var topicFilter = _senderType + '/' + _senderId + '/c/' + _deviceId;
     _client.subscribe(topicFilter);
     _onCommandCallback = callback;
 }
